@@ -321,3 +321,241 @@ The data reveals several exploitable weaknesses:
             "data_source": "GRID Esports API (demo interpretation)",
             "note": "Configure GEMINI_API_KEY for production AI insights"
         }
+
+    async def chat_with_scouting_data(
+        self,
+        question: str,
+        report_data: Dict[str, Any],
+        chat_history: list = None
+    ) -> Dict[str, Any]:
+        """
+        Answer user questions about scouting data using Gemini or demo mode.
+
+        Args:
+            question: The user's question
+            report_data: The complete scouting report data
+            chat_history: Previous chat exchanges for context
+
+        Returns:
+            Dictionary with the answer and metadata
+        """
+        logger.info(f"Chat question: {question}")
+
+        # Build context from report data
+        context = self._build_chat_context(report_data)
+
+        # Build chat prompt
+        prompt = self._build_chat_prompt(question, context, chat_history or [])
+
+        if not self._initialized:
+            logger.info("Using demo chat response (Gemini not configured)")
+            return self._generate_demo_chat_response(question, report_data)
+
+        try:
+            logger.info("Sending chat request to Gemini...")
+            response = self.model.generate_content(prompt)
+            answer = response.text
+
+            # Log the interaction
+            self._log_ai_interaction(
+                prompt=prompt,
+                response=answer,
+                metadata={
+                    "type": "chat",
+                    "question": question[:100],
+                    "model": "gemini-pro"
+                }
+            )
+
+            return {
+                "success": True,
+                "answer": answer,
+                "model": "gemini-pro",
+                "generated_at": datetime.now().isoformat()
+            }
+
+        except Exception as e:
+            logger.error(f"Chat error: {e}")
+            return self._generate_demo_chat_response(question, report_data)
+
+    def _build_chat_context(self, report_data: Dict[str, Any]) -> str:
+        """Build context string from report data for chat."""
+        overview = report_data.get("layer1_report", {}).get("match_overview", {})
+        snapshot = report_data.get("layer1_report", {}).get("opponent_snapshot", {})
+        strengths = report_data.get("layer1_report", {}).get("key_strengths", [])
+        weaknesses = report_data.get("layer1_report", {}).get("exploitable_weaknesses", [])
+        recommendations = report_data.get("layer1_report", {}).get("coach_recommendations", [])
+
+        context = f"""
+SCOUTING DATA CONTEXT (from GRID Esports API):
+
+TEAMS:
+- Our Team: {overview.get('team_a_name', 'Unknown')}
+- Opponent: {overview.get('team_b_name', 'Unknown')}
+
+OPPONENT STATS:
+- Matches Analyzed: {overview.get('matches_analyzed_team_b', 0)}
+- Overall Win Rate: {overview.get('opponent_overall_win_rate', 0):.1f}%
+- Recent Form: {' '.join(overview.get('opponent_recent_form', []))}
+- Analysis Window: {overview.get('analysis_time_window_days', 90)} days
+
+BEST MAPS:
+{self._format_maps(snapshot.get('best_maps', []))}
+
+WORST MAPS:
+{self._format_maps(snapshot.get('worst_maps', []))}
+
+TOP AGENTS:
+{self._format_agents(snapshot.get('most_played_agents', []))}
+
+STAR PLAYERS:
+{self._format_players(snapshot.get('star_players', []))}
+
+KEY STRENGTHS:
+{self._format_strengths(strengths)}
+
+EXPLOITABLE WEAKNESSES:
+{self._format_weaknesses(weaknesses)}
+
+COACH RECOMMENDATIONS:
+{self._format_recommendations(recommendations)}
+"""
+        return context
+
+    def _format_maps(self, maps: list) -> str:
+        if not maps:
+            return "- No map data available"
+        return "\n".join([f"- {m['map']}: {m['win_rate']}% WR ({m['record']})" for m in maps])
+
+    def _format_agents(self, agents: list) -> str:
+        if not agents:
+            return "- No agent data available"
+        return "\n".join([f"- {a['agent']}: {a['pick_rate']}% pick rate" for a in agents[:5]])
+
+    def _format_players(self, players: list) -> str:
+        if not players:
+            return "- No player data available"
+        return "\n".join([f"- {p['name']}: {p['avg_acs']:.0f} ACS, {p['kd_ratio']:.2f} K/D" for p in players])
+
+    def _format_strengths(self, strengths: list) -> str:
+        if not strengths:
+            return "- No significant strengths detected"
+        return "\n".join([f"- {s['category']}: {s['description']} ({s['metric']})" for s in strengths])
+
+    def _format_weaknesses(self, weaknesses: list) -> str:
+        if not weaknesses:
+            return "- No significant weaknesses detected"
+        return "\n".join([f"- {w['category']}: {w['description']} ({w['metric']})" for w in weaknesses])
+
+    def _format_recommendations(self, recs: list) -> str:
+        if not recs:
+            return "- No specific recommendations"
+        return "\n".join([f"- {r['action']}: {r['reasoning']}" for r in recs])
+
+    def _build_chat_prompt(self, question: str, context: str, history: list) -> str:
+        """Build the chat prompt with context and history."""
+        history_text = ""
+        if history:
+            history_text = "\nPREVIOUS CONVERSATION:\n"
+            for h in history[-4:]:  # Last 2 exchanges
+                role = "Coach" if h.get("role") == "user" else "Scout Assistant"
+                history_text += f"{role}: {h.get('content', '')}\n"
+
+        prompt = f"""You are the Scout Assistant, an AI helping VALORANT coaches prepare for matches.
+You have access to GRID Esports API data about the opponent team.
+
+IMPORTANT RULES:
+1. ONLY use the data provided below - never invent statistics
+2. Be concise and tactical in your responses
+3. If data is missing, say so honestly
+4. Focus on actionable coaching insights
+5. Reference specific numbers from the data when relevant
+
+{context}
+{history_text}
+
+COACH'S QUESTION: {question}
+
+Provide a helpful, data-driven response. Keep it conversational but professional.
+If the question is not about the match or opponent, politely redirect to scouting topics."""
+
+        return prompt
+
+    def _generate_demo_chat_response(self, question: str, report_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate demo chat response when Gemini is not available."""
+        overview = report_data.get("layer1_report", {}).get("match_overview", {})
+        snapshot = report_data.get("layer1_report", {}).get("opponent_snapshot", {})
+        strengths = report_data.get("layer1_report", {}).get("key_strengths", [])
+        weaknesses = report_data.get("layer1_report", {}).get("exploitable_weaknesses", [])
+        recommendations = report_data.get("layer1_report", {}).get("coach_recommendations", [])
+
+        question_lower = question.lower()
+        team_b = overview.get("team_b_name", "the opponent")
+
+        # Generate contextual response based on question keywords
+        if any(word in question_lower for word in ['map', 'ban', 'veto', 'pick']):
+            best_maps = snapshot.get('best_maps', [])
+            worst_maps = snapshot.get('worst_maps', [])
+            best_str = ", ".join([f"{m['map']} ({m['win_rate']}%)" for m in best_maps[:2]]) or "no data"
+            worst_str = ", ".join([f"{m['map']} ({m['win_rate']}%)" for m in worst_maps[:2]]) or "no data"
+            answer = f"Based on GRID data, <strong>{team_b}</strong>'s strongest maps are: {best_str}. I'd recommend banning these. Their weakest maps are: {worst_str} - try to force them onto these."
+
+        elif any(word in question_lower for word in ['agent', 'composition', 'comp']):
+            agents = snapshot.get('most_played_agents', [])
+            if agents:
+                agent_str = ", ".join([f"{a['agent']} ({a['pick_rate']}%)" for a in agents[:3]])
+                answer = f"Their most picked agents are: {agent_str}. Consider counter-picking or banning their comfort picks like {agents[0]['agent']}."
+            else:
+                answer = "I don't have enough agent composition data for this opponent."
+
+        elif any(word in question_lower for word in ['player', 'star', 'focus', 'target', 'shutdown']):
+            players = snapshot.get('star_players', [])
+            if players:
+                top_player = players[0]
+                answer = f"<strong>{top_player['name']}</strong> is their star player with {top_player['avg_acs']:.0f} ACS and {top_player['kd_ratio']:.2f} K/D. Focus defensive setups and utility to shut them down early."
+            else:
+                answer = "I don't have detailed player stats for this opponent."
+
+        elif any(word in question_lower for word in ['weak', 'exploit', 'vulnerab']):
+            if weaknesses:
+                weak_str = "; ".join([f"{w['description']} ({w['metric']})" for w in weaknesses[:2]])
+                answer = f"Key exploitable weaknesses: {weak_str}. Focus your game plan on these areas."
+            else:
+                answer = "No significant weaknesses detected in the GRID data. They appear to be a well-rounded team."
+
+        elif any(word in question_lower for word in ['strong', 'strength', 'good']):
+            if strengths:
+                str_list = "; ".join([f"{s['description']} ({s['metric']})" for s in strengths[:2]])
+                answer = f"Their key strengths: {str_list}. Be prepared to counter these in your game plan."
+            else:
+                answer = "No exceptional strengths detected - they appear to have balanced performance."
+
+        elif any(word in question_lower for word in ['win', 'rate', 'form', 'recent']):
+            win_rate = overview.get('opponent_overall_win_rate', 0)
+            form = overview.get('opponent_recent_form', [])
+            form_str = " ".join(form) if form else "Unknown"
+            answer = f"<strong>{team_b}</strong> has a {win_rate:.1f}% overall win rate. Recent form: {form_str}."
+
+        elif any(word in question_lower for word in ['recommend', 'strategy', 'approach', 'game plan']):
+            if recommendations:
+                rec_str = "<br>".join([f"• <strong>{r['action']}</strong>: {r['reasoning']}" for r in recommendations[:3]])
+                answer = f"My top recommendations:<br>{rec_str}"
+            else:
+                answer = "Based on the data, I'd recommend standard preparation with focus on your own team's strengths."
+
+        elif any(word in question_lower for word in ['pistol', 'eco', 'economy']):
+            answer = f"The GRID data shows general performance trends. For detailed pistol/eco round analysis, check the full statistics in the scouting summary below. Their overall win rate of {overview.get('opponent_overall_win_rate', 0):.1f}% suggests their economy management is {'solid' if overview.get('opponent_overall_win_rate', 0) > 50 else 'potentially exploitable'}."
+
+        else:
+            # Default response
+            matches = overview.get('matches_analyzed_team_b', 0)
+            win_rate = overview.get('opponent_overall_win_rate', 0)
+            answer = f"I've analyzed {matches} matches for <strong>{team_b}</strong> (win rate: {win_rate:.1f}%). Feel free to ask me about their maps, agents, players, strengths, weaknesses, or specific strategic recommendations!"
+
+        return {
+            "success": True,
+            "answer": answer,
+            "model": "demo-mode",
+            "generated_at": datetime.now().isoformat()
+        }
+

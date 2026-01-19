@@ -103,17 +103,47 @@
                     </div>
                 </div>
 
-                <!-- LAYER 1: Executive Scouting Insight (AI) -->
-                <div class="layer-section executive-insight-section" id="layer1Section">
-                    <div class="section-header executive-header">
-                        <h2><i class="bi bi-lightning-charge-fill"></i> Executive Scouting Insight (AI)</h2>
+                <!-- LAYER 1: Scout Assistant Chat -->
+                <div class="layer-section chatbot-section" id="layer1Section">
+                    <div class="section-header chat-header">
+                        <div class="chat-title">
+                            <div class="chat-avatar">
+                                <i class="bi bi-robot"></i>
+                            </div>
+                            <div class="chat-info">
+                                <h2>Scout Assistant</h2>
+                                <span class="chat-status"><span class="status-dot"></span> Online</span>
+                            </div>
+                        </div>
                         <div class="layer-badge">
                             <span class="layer-number">LAYER 1</span>
                             <span class="source-tag ai">Gemini AI</span>
                         </div>
                     </div>
-                    <div class="executive-content" id="executiveInsightContent">
-                        <!-- Populated by JavaScript -->
+                    <div class="chat-container" id="chatMessages">
+                        <!-- Chat messages populated by JavaScript -->
+                    </div>
+                    <div class="chat-input-area">
+                        <div class="suggested-questions" id="suggestedQuestions">
+                            <button class="suggestion-btn" onclick="askQuestion('What are their weakest maps?')">
+                                <i class="bi bi-map"></i> Weakest maps?
+                            </button>
+                            <button class="suggestion-btn" onclick="askQuestion('Which agents should we ban?')">
+                                <i class="bi bi-person-x"></i> Agent bans?
+                            </button>
+                            <button class="suggestion-btn" onclick="askQuestion('Who is their star player?')">
+                                <i class="bi bi-star"></i> Star player?
+                            </button>
+                            <button class="suggestion-btn" onclick="askQuestion('What is their playstyle?')">
+                                <i class="bi bi-lightning"></i> Playstyle?
+                            </button>
+                        </div>
+                        <div class="chat-input-wrapper">
+                            <input type="text" id="chatInput" class="chat-input" placeholder="Ask about the opponent..." onkeypress="handleChatKeypress(event)">
+                            <button class="chat-send-btn" onclick="sendChatMessage()">
+                                <i class="bi bi-send-fill"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 

@@ -75,6 +75,13 @@ class ScoutingRequest(BaseModel):
     time_window_days: int = 90
 
 
+class ChatRequest(BaseModel):
+    """Request model for chat interactions."""
+    question: str
+    report_data: dict
+    chat_history: list = []
+
+
 class TeamResponse(BaseModel):
     """Response model for team data."""
     id: str
@@ -271,6 +278,35 @@ async def generate_scouting_report(request: ScoutingRequest):
 
     except Exception as e:
         logger.error(f"Error generating report: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/chat")
+async def chat_with_data(request: ChatRequest):
+    """
+    Interactive chat endpoint for asking questions about scouting data.
+
+    Uses Gemini AI to answer questions based on the fetched GRID data.
+    """
+    logger.info(f"Chat request: {request.question[:100]}...")
+
+    try:
+        # Generate chat response using Gemini
+        response = await gemini_client.chat_with_scouting_data(
+            question=request.question,
+            report_data=request.report_data,
+            chat_history=request.chat_history
+        )
+
+        return {
+            "success": True,
+            "answer": response["answer"],
+            "model": response.get("model", "gemini-pro"),
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Chat error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
