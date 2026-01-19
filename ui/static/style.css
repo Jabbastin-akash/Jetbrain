@@ -276,6 +276,62 @@ body {
     color: var(--text-secondary);
 }
 
+/* Executive Insight Section (Enhancement 1) */
+.executive-insight-section {
+    background: linear-gradient(135deg, rgba(255, 70, 85, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%);
+    border-radius: 8px;
+    border: 2px solid var(--primary);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.executive-header {
+    background: var(--dark-lighter);
+    border-bottom: 2px solid var(--primary);
+}
+
+.executive-content {
+    padding: 1.5rem;
+}
+
+.executive-insight-box {
+    background: var(--dark-card);
+    border-left: 4px solid var(--primary);
+    border-radius: 6px;
+    padding: 1.5rem;
+}
+
+.insight-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+    font-weight: 400;
+    margin-bottom: 1rem;
+}
+
+.insight-meta {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* GRID Traceability (Enhancement 3) */
+.grid-traceability {
+    background: rgba(0, 212, 170, 0.1);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 500;
+}
+
 .report-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -499,6 +555,9 @@ body {
     padding: 1rem 1.25rem;
     background: var(--dark-lighter);
     border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .section-header h2 {
@@ -508,6 +567,15 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    margin: 0;
+}
+
+.section-header .badge {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--primary) !important;
 }
 
 .recommendations-grid {

@@ -231,8 +231,12 @@ async def generate_scouting_report(request: ScoutingRequest):
         # Convert to dict for JSON response and AI processing
         report_dict = report.to_dict()
 
-        # Step 3: Generate AI insights
-        logger.info("Step 3: Generating Gemini AI insights...")
+        # Step 3: Generate Executive Insight (30-second brief)
+        logger.info("Step 3: Generating Executive AI Insight...")
+        executive_insight = await gemini_client.generate_executive_insight(report_dict)
+
+        # Step 4: Generate Full Strategic Insights
+        logger.info("Step 4: Generating Strategic AI Insights...")
         ai_insights = await gemini_client.generate_strategic_insights(report_dict)
 
         logger.info("=== Scouting Report Complete ===")
@@ -242,6 +246,9 @@ async def generate_scouting_report(request: ScoutingRequest):
             "report_id": report.report_id,
             "generated_at": report.generated_at.isoformat(),
             "data_source": "GRID Esports API",
+
+            # Executive Insight (NEW - Enhancement 1)
+            "executive_insight": executive_insight,
 
             # Layer 1: Structured factual report
             "layer1_report": {

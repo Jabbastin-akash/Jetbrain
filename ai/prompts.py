@@ -17,6 +17,62 @@ class PromptTemplates:
     4. Output is professional and coach-oriented
     """
 
+    EXECUTIVE_INSIGHT_PROMPT = """You are an elite VALORANT esports coach preparing a 30-second strategic brief before a crucial match.
+
+## CRITICAL RULES:
+1. ONLY use the statistics provided below - DO NOT invent any numbers
+2. DO NOT make up data - reference only what is provided
+3. Be concise - coaches need to understand in under 30 seconds
+4. Focus on strategic implications, not statistics
+5. Write in professional coaching language
+
+## SCOUTING DATA:
+
+### Match Context
+- Our Team: {team_a_name}
+- Opponent: {team_b_name}
+- Matches Analyzed: {matches_analyzed} (last {time_window} days)
+- Opponent Win Rate: {opponent_win_rate}%
+
+### Opponent's Strongest Maps
+{best_maps}
+
+### Opponent's Weakest Maps
+{worst_maps}
+
+### Key Agents
+{key_agents}
+
+### Identified Strengths
+{strengths}
+
+### Identified Weaknesses
+{weaknesses}
+
+### Draft Recommendations
+{recommendations}
+
+---
+
+## YOUR TASK:
+
+Generate a SINGLE concise paragraph (4-6 sentences) that answers these FOUR questions:
+
+1. **How does this opponent want to win?** (their playstyle and comfort zone)
+2. **Where are they most vulnerable?** (specific exploitable weaknesses)
+3. **What is the biggest risk in this matchup?** (what could go wrong for us)
+4. **What is the recommended high-level game plan?** (our strategic approach)
+
+## FORMAT REQUIREMENTS:
+- ONE paragraph only
+- No bullet points
+- No section headers
+- Professional coaching tone
+- Reference the provided data naturally
+- Be specific but concise
+
+Begin your executive insight:"""
+
     STRATEGIC_INSIGHT_PROMPT = """You are an elite VALORANT esports analyst preparing a strategic briefing for a professional coaching staff. Your job is to interpret the scouting data provided and deliver actionable strategic insights.
 
 ## CRITICAL RULES:
@@ -118,6 +174,70 @@ Provide:
 3. Trading opportunities
 
 Reference the specific stats (ACS, K/D, FK/FD) in your analysis."""
+
+    @classmethod
+    def format_executive_insight_prompt(cls, report_data: dict) -> str:
+        """
+        Format the executive insight prompt for quick strategic brief.
+
+        Args:
+            report_data: Dictionary containing scouting report data
+
+        Returns:
+            Formatted prompt string ready for Gemini
+        """
+        overview = report_data.get("match_overview", {})
+        snapshot = report_data.get("opponent_snapshot", {})
+
+        # Format best maps (top 2)
+        best_maps = "\n".join([
+            f"- {m['map']}: {m['win_rate']}% win rate"
+            for m in snapshot.get("best_maps", [])[:2]
+        ]) or "- No dominant maps identified"
+
+        # Format worst maps (top 2)
+        worst_maps = "\n".join([
+            f"- {m['map']}: {m['win_rate']}% win rate"
+            for m in snapshot.get("worst_maps", [])[:2]
+        ]) or "- No weak maps identified"
+
+        # Format key agents (top 3)
+        key_agents = "\n".join([
+            f"- {a['agent']} ({a['pick_rate']}% pick rate)"
+            for a in snapshot.get("most_played_agents", [])[:3]
+        ]) or "- Standard agent pool"
+
+        # Format strengths (top 2)
+        strengths = "\n".join([
+            f"- {s['description']}"
+            for s in report_data.get("key_strengths", [])[:2]
+        ]) or "- No exceptional strengths identified"
+
+        # Format weaknesses (top 2)
+        weaknesses = "\n".join([
+            f"- {w['description']}"
+            for w in report_data.get("exploitable_weaknesses", [])[:2]
+        ]) or "- No major weaknesses identified"
+
+        # Format recommendations (top 2)
+        recommendations = "\n".join([
+            f"- {r['action']}: {r['reasoning']}"
+            for r in report_data.get("coach_recommendations", [])[:2]
+        ]) or "- Standard preparation recommended"
+
+        return cls.EXECUTIVE_INSIGHT_PROMPT.format(
+            team_a_name=overview.get("team_a_name", "Our Team"),
+            team_b_name=overview.get("team_b_name", "Opponent"),
+            matches_analyzed=overview.get("matches_analyzed_team_b", 0),
+            time_window=overview.get("analysis_time_window_days", 90),
+            opponent_win_rate=overview.get("opponent_overall_win_rate", 0),
+            best_maps=best_maps,
+            worst_maps=worst_maps,
+            key_agents=key_agents,
+            strengths=strengths,
+            weaknesses=weaknesses,
+            recommendations=recommendations
+        )
 
     @classmethod
     def format_strategic_insight_prompt(cls, report_data: dict) -> str:
