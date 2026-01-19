@@ -1,0 +1,94 @@
+═══════════════════════════════════════════════════════════════
+   VALORANT MATCHUP SCOUTING ASSISTANT - QUICK START
+   Category 2: Automated Scouting Report Generator
+═══════════════════════════════════════════════════════════════
+
+🚀 TO RUN THE APPLICATION:
+
+1. Double-click: start_server.bat
+   (or run: python run_server.py)
+
+2. Open browser: http://localhost:8000
+
+3. Select teams and click "Generate Report"
+
+═══════════════════════════════════════════════════════════════
+
+✅ WHAT'S INCLUDED:
+
+- 6 Professional VALORANT Teams (Demo Data)
+  • Sentinels (NA)
+  • Fnatic (EMEA)
+  • LOUD (BR)
+  • DRX (KR)
+  • NRG (NA)
+  • Paper Rex (APAC)
+
+- Full Match Analysis
+  • Map performance
+  • Agent compositions
+  • Player statistics
+  • Pattern detection
+
+- AI Strategic Insights (Gemini)
+  • Opponent playstyle analysis
+  • Vulnerability identification
+  • Risk assessment
+  • Game plan recommendations
+
+═══════════════════════════════════════════════════════════════
+
+📊 FEATURES:
+
+✓ GRID API Integration (demo mode active)
+✓ Google Gemini AI Insights
+✓ Two-Layer Report Design
+✓ Professional Esports UI
+✓ Coach-Ready Recommendations
+✓ Full Data Traceability
+
+═══════════════════════════════════════════════════════════════
+
+📁 KEY FILES:
+
+- main.py                    → FastAPI backend
+- grid_client/client.py      → GRID API integration
+- analysis/                  → Statistical analysis
+- ai/gemini_client.py        → Gemini AI client
+- ui/                        → Web interface
+- .env                       → API keys (configured)
+- README.md                  → Full documentation
+- FINAL_INSTRUCTIONS.md      → Detailed guide
+
+═══════════════════════════════════════════════════════════════
+
+🎬 DEMO FLOW:
+
+1. Server starts → Shows startup message
+2. Browser opens → Professional dark UI loads
+3. Select "Sentinels" vs "Fnatic"
+4. Click "Generate Report"
+5. View:
+   - Left: GRID-backed data (facts)
+   - Right: Gemini AI insights (strategy)
+   - Bottom: Actionable recommendations
+
+═══════════════════════════════════════════════════════════════
+
+⚡ QUICK TEST:
+
+PowerShell:
+  cd "D:\Jet Brains hack\app"
+  python run_server.py
+
+Browser:
+  http://localhost:8000
+
+API Test:
+  http://localhost:8000/api/teams
+
+═══════════════════════════════════════════════════════════════
+
+✨ PROJECT STATUS: COMPLETE AND READY FOR DEMO! ✨
+
+═══════════════════════════════════════════════════════════════
