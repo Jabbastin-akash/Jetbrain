@@ -103,50 +103,120 @@
                     </div>
                 </div>
 
-                <!-- Executive Insight (Enhancement 1 - TOP OF REPORT) -->
-                <div class="executive-insight-section">
+                <!-- LAYER 1: Executive Scouting Insight (AI) -->
+                <div class="layer-section executive-insight-section" id="layer1Section">
                     <div class="section-header executive-header">
-                        <h2><i class="bi bi-lightning-charge-fill"></i> Executive Scouting Insight</h2>
-                        <span class="source-tag ai">AI-Powered</span>
+                        <h2><i class="bi bi-lightning-charge-fill"></i> Executive Scouting Insight (AI)</h2>
+                        <div class="layer-badge">
+                            <span class="layer-number">LAYER 1</span>
+                            <span class="source-tag ai">Gemini AI</span>
+                        </div>
                     </div>
                     <div class="executive-content" id="executiveInsightContent">
                         <!-- Populated by JavaScript -->
                     </div>
                 </div>
 
-                <!-- Two Column Layout -->
-                <div class="report-grid">
-                    <!-- Left: Data Report -->
-                    <div class="report-column data-column">
-                        <div class="column-header">
-                            <h2><i class="bi bi-clipboard-data"></i> Scouting Report</h2>
+                <!-- LAYER 2: Coach Recommendations (Actionable) -->
+                <div class="layer-section recommendations-section" id="layer2Section">
+                    <div class="section-header">
+                        <h2><i class="bi bi-bullseye"></i> Coach Recommendations</h2>
+                        <div class="layer-badge">
+                            <span class="layer-number">LAYER 2</span>
                             <span class="source-tag">GRID Data</span>
                         </div>
-                        <div class="column-content" id="layer1Content">
-                            <!-- Populated by JavaScript -->
+                    </div>
+                    <div class="recommendations-grid" id="recommendationsContent">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- LAYER 3: Structured Scouting Summary -->
+                <div class="layer-section" id="layer3Section">
+                    <div class="section-header">
+                        <h2><i class="bi bi-clipboard-data"></i> Structured Scouting Summary</h2>
+                        <div class="layer-badge">
+                            <span class="layer-number">LAYER 3</span>
+                            <span class="source-tag">GRID Data</span>
+                        </div>
+                    </div>
+                    <div class="report-grid">
+                        <!-- Left: Team & Map Data -->
+                        <div class="report-column data-column">
+                            <div class="column-header">
+                                <h3><i class="bi bi-people-fill"></i> Team Overview & Maps</h3>
+                            </div>
+                            <div class="column-content" id="teamMapContent">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Right: Agents & Players -->
+                        <div class="report-column data-column">
+                            <div class="column-header">
+                                <h3><i class="bi bi-person-badge"></i> Agents & Players</h3>
+                            </div>
+                            <div class="column-content" id="agentPlayerContent">
+                                <!-- Populated by JavaScript -->
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Right: AI Insights -->
-                    <div class="report-column insights-column">
-                        <div class="column-header">
-                            <h2><i class="bi bi-lightbulb"></i> Strategic Analysis</h2>
-                            <span class="source-tag ai">Gemini AI</span>
+                    <!-- Strengths & Weaknesses Row -->
+                    <div class="report-grid mt-3">
+                        <div class="report-column">
+                            <div class="column-header strength-header">
+                                <h3><i class="bi bi-shield-fill-exclamation"></i> Key Strengths</h3>
+                            </div>
+                            <div class="column-content" id="strengthsContent">
+                                <!-- Populated by JavaScript -->
+                            </div>
                         </div>
-                        <div class="column-content" id="layer2Content">
-                            <!-- Populated by JavaScript -->
+                        <div class="report-column">
+                            <div class="column-header weakness-header">
+                                <h3><i class="bi bi-bullseye"></i> Exploitable Weaknesses</h3>
+                            </div>
+                            <div class="column-content" id="weaknessesContent">
+                                <!-- Populated by JavaScript -->
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recommendations (Enhancement 2) -->
-                <div class="recommendations-section">
+                <!-- LAYER 4: All Detected Insights (GRID-backed) -->
+                <div class="layer-section insights-list-section" id="layer4Section">
                     <div class="section-header">
-                        <h2><i class="bi bi-bullseye"></i> Coach Recommendations</h2>
-                        <span class="badge bg-primary">Actionable Decisions</span>
+                        <h2><i class="bi bi-lightbulb-fill"></i> All Detected Insights (GRID-backed)</h2>
+                        <div class="layer-badge">
+                            <span class="layer-number">LAYER 4</span>
+                            <span class="source-tag ai">Gemini Analysis</span>
+                        </div>
                     </div>
-                    <div class="recommendations-grid" id="recommendationsContent">
+                    <div class="insights-content" id="allInsightsContent">
                         <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- LAYER 5: Full Raw JSON Output -->
+                <div class="layer-section json-section" id="layer5Section">
+                    <div class="section-header">
+                        <h2><i class="bi bi-code-square"></i> Full Scouting Report JSON (GRID Data)</h2>
+                        <div class="layer-badge">
+                            <span class="layer-number">LAYER 5</span>
+                            <span class="source-tag">Raw Data</span>
+                            <button class="download-btn" onclick="downloadJSON()">
+                                <i class="bi bi-download"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                    <div class="json-controls">
+                        <button class="toggle-json-btn" onclick="toggleJSON()">
+                            <i class="bi bi-chevron-down" id="jsonToggleIcon"></i>
+                            <span id="jsonToggleText">Expand Raw JSON</span>
+                        </button>
+                    </div>
+                    <div class="json-content collapsed" id="rawJSONContent">
+                        <pre id="jsonPre"></pre>
                     </div>
                 </div>
             </section>
@@ -161,7 +231,7 @@
                     <span>Hackathon Project: Category 2 - Automated Scouting Report Generator</span>
                 </div>
                 <div class="footer-right">
-                    <span>Built with GRID API + Gemini + JetBrains</span>
+                    <span>Built with GRID API + Gemini AI + JetBrains</span>
                 </div>
             </div>
         </div>
