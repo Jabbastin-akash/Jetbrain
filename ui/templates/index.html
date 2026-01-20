@@ -3,272 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VALORANT Scouting | Match Preparation Tool</title>
+    <title>SCOUT | Match Preparation Tool</title>
+
+    <!-- Vendor CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- App CSS -->
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="site-header">
-        <div class="container">
-            <div class="header-content">
-                <div class="brand">
-                    <div class="brand-icon">
-                        <svg width="32" height="32" viewBox="0 0 100 100" fill="none">
-                            <polygon points="50,5 95,30 95,70 50,95 5,70 5,30" fill="#ff4655" stroke="#fff" stroke-width="2"/>
-                            <circle cx="50" cy="50" r="15" fill="#fff"/>
-                        </svg>
-                    </div>
-                    <div class="brand-text">
-                        <span class="brand-title">SCOUT</span>
-                        <span class="brand-subtitle">Pro Match Prep</span>
-                    </div>
+
+<header class="site-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="32" height="32" viewBox="0 0 100 100">
+                        <polygon points="50,5 95,30 95,70 50,95 5,70 5,30"
+                                 fill="#ff4655" stroke="#fff" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="15" fill="#fff"/>
+                    </svg>
                 </div>
-                <div class="header-badges">
-                    <span class="data-badge">
-                        <i class="bi bi-database-fill"></i>
-                        GRID Data
-                    </span>
-                    <span class="ai-badge">
-                        <i class="bi bi-stars"></i>
-                        Gemini Analysis
-                    </span>
+                <div class="brand-text">
+                    <span class="brand-title">SCOUT</span>
+                    <span class="brand-subtitle">Pro Match Prep</span>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <main class="main-content">
-        <div class="container">
-            <!-- Team Selection Panel -->
-            <section class="scout-panel">
-                <div class="panel-header">
-                    <h1>Match Scouting</h1>
-                    <p>Select teams and generate comprehensive match preparation report</p>
+<main class="main-content">
+    <div class="container">
+
+        <!-- Match Setup -->
+        <section class="scout-panel">
+            <div class="panel-header">
+                <h1>Match Scouting</h1>
+                <p>Generate a focused match preparation report</p>
+            </div>
+
+            <div class="team-selector">
+                <div class="team-select-group">
+                    <label>YOUR TEAM</label>
+                    <select class="team-dropdown" id="teamA"></select>
                 </div>
 
-                <div class="team-selector">
-                    <div class="team-select-group">
-                        <label>YOUR TEAM</label>
-                        <select class="team-dropdown" id="teamA">
-                            <option value="">Choose team...</option>
-                        </select>
-                    </div>
+                <div class="vs-divider"><span>VS</span></div>
 
-                    <div class="vs-divider">
-                        <span>VS</span>
-                    </div>
-
-                    <div class="team-select-group opponent">
-                        <label>OPPONENT</label>
-                        <select class="team-dropdown" id="teamB">
-                            <option value="">Choose opponent...</option>
-                        </select>
-                    </div>
-
-                    <div class="options-group">
-                        <label>ANALYSIS PERIOD</label>
-                        <select class="time-dropdown" id="timeWindow">
-                            <option value="30">30 Days</option>
-                            <option value="60">60 Days</option>
-                            <option value="90" selected>90 Days</option>
-                            <option value="180">6 Months</option>
-                        </select>
-                    </div>
-
-                    <button class="scout-btn" id="generateBtn" onclick="generateReport()">
-                        <i class="bi bi-search"></i>
-                        Scout Opponent
-                    </button>
-                </div>
-            </section>
-
-            <!-- Loading State -->
-            <section id="loadingSection" class="loading-section d-none">
-                <div class="loading-content">
-                    <div class="loading-spinner"></div>
-                    <h3 id="loadingText">Fetching match data...</h3>
-                    <p>Analyzing opponent patterns</p>
-                </div>
-            </section>
-
-            <!-- Results Section -->
-            <section id="resultsSection" class="results-section d-none">
-                <!-- Report Header -->
-                <div class="report-header">
-                    <div class="report-meta">
-                        <span class="report-id" id="reportMeta"></span>
-                    </div>
+                <div class="team-select-group">
+                    <label>OPPONENT</label>
+                    <select class="team-dropdown" id="teamB"></select>
                 </div>
 
-                <!-- LAYER 1: Scout Assistant Chat -->
-                <div class="layer-section chatbot-section" id="layer1Section">
-                    <div class="section-header chat-header">
-                        <div class="chat-title">
-                            <div class="chat-avatar">
-                                <i class="bi bi-robot"></i>
-                            </div>
-                            <div class="chat-info">
-                                <h2>Scout Assistant</h2>
-                                <span class="chat-status"><span class="status-dot"></span> Online</span>
-                            </div>
-                        </div>
-                        <div class="layer-badge">
-                            <span class="layer-number">LAYER 1</span>
-                            <span class="source-tag ai">Gemini AI</span>
-                        </div>
-                    </div>
-                    <div class="chat-container" id="chatMessages">
-                        <!-- Chat messages populated by JavaScript -->
-                    </div>
-                    <div class="chat-input-area">
-                        <div class="suggested-questions" id="suggestedQuestions">
-                            <button class="suggestion-btn" onclick="askQuestion('What are their weakest maps?')">
-                                <i class="bi bi-map"></i> Weakest maps?
-                            </button>
-                            <button class="suggestion-btn" onclick="askQuestion('Which agents should we ban?')">
-                                <i class="bi bi-person-x"></i> Agent bans?
-                            </button>
-                            <button class="suggestion-btn" onclick="askQuestion('Who is their star player?')">
-                                <i class="bi bi-star"></i> Star player?
-                            </button>
-                            <button class="suggestion-btn" onclick="askQuestion('What is their playstyle?')">
-                                <i class="bi bi-lightning"></i> Playstyle?
-                            </button>
-                        </div>
-                        <div class="chat-input-wrapper">
-                            <input type="text" id="chatInput" class="chat-input" placeholder="Ask about the opponent..." onkeypress="handleChatKeypress(event)">
-                            <button class="chat-send-btn" onclick="sendChatMessage()">
-                                <i class="bi bi-send-fill"></i>
-                            </button>
-                        </div>
+                <div class="options-group">
+                    <label>ANALYSIS PERIOD</label>
+                    <select class="time-dropdown" id="timeWindow">
+                        <option value="30">30 Days</option>
+                        <option value="60">60 Days</option>
+                        <option value="90" selected>90 Days</option>
+                        <option value="180">6 Months</option>
+                    </select>
+                </div>
+
+                <button class="scout-btn" id="generateBtn" onclick="generateReport()">
+                    <i class="bi bi-search"></i> Scout Opponent
+                </button>
+            </div>
+        </section>
+
+        <!-- Loading -->
+        <section id="loadingSection" class="loading-section d-none">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <h3 id="loadingText">Preparing analysis…</h3>
+                <p>Reviewing recent competitive trends</p>
+            </div>
+        </section>
+
+        <!-- Results -->
+        <section id="resultsSection" class="results-section d-none">
+
+            <div class="report-header">
+                <div class="report-meta">
+                    <span id="reportMeta"></span>
+                </div>
+            </div>
+
+            <!-- Match Assistant -->
+            <section class="layer-section chatbot-section">
+                <div class="section-header chat-header">
+                    <div class="chat-title">
+                        <div class="chat-avatar"><i class="bi bi-chat-dots-fill"></i></div>
+                        <div class="chat-info"><h2>Match Assistant</h2></div>
                     </div>
                 </div>
 
-                <!-- LAYER 2: Coach Recommendations (Actionable) -->
-                <div class="layer-section recommendations-section" id="layer2Section">
-                    <div class="section-header">
-                        <h2><i class="bi bi-bullseye"></i> Coach Recommendations</h2>
-                        <div class="layer-badge">
-                            <span class="layer-number">LAYER 2</span>
-                            <span class="source-tag">GRID Data</span>
-                        </div>
-                    </div>
-                    <div class="recommendations-grid" id="recommendationsContent">
-                        <!-- Populated by JavaScript -->
-                    </div>
-                </div>
+                <div class="chat-container" id="chatMessages"></div>
 
-                <!-- LAYER 3: Structured Scouting Summary -->
-                <div class="layer-section" id="layer3Section">
-                    <div class="section-header">
-                        <h2><i class="bi bi-clipboard-data"></i> Structured Scouting Summary</h2>
-                        <div class="layer-badge">
-                            <span class="layer-number">LAYER 3</span>
-                            <span class="source-tag">GRID Data</span>
-                        </div>
-                    </div>
-                    <div class="report-grid">
-                        <!-- Left: Team & Map Data -->
-                        <div class="report-column data-column">
-                            <div class="column-header">
-                                <h3><i class="bi bi-people-fill"></i> Team Overview & Maps</h3>
-                            </div>
-                            <div class="column-content" id="teamMapContent">
-                                <!-- Populated by JavaScript -->
-                            </div>
-                        </div>
-
-                        <!-- Right: Agents & Players -->
-                        <div class="report-column data-column">
-                            <div class="column-header">
-                                <h3><i class="bi bi-person-badge"></i> Agents & Players</h3>
-                            </div>
-                            <div class="column-content" id="agentPlayerContent">
-                                <!-- Populated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Strengths & Weaknesses Row -->
-                    <div class="report-grid mt-3">
-                        <div class="report-column">
-                            <div class="column-header strength-header">
-                                <h3><i class="bi bi-shield-fill-exclamation"></i> Key Strengths</h3>
-                            </div>
-                            <div class="column-content" id="strengthsContent">
-                                <!-- Populated by JavaScript -->
-                            </div>
-                        </div>
-                        <div class="report-column">
-                            <div class="column-header weakness-header">
-                                <h3><i class="bi bi-bullseye"></i> Exploitable Weaknesses</h3>
-                            </div>
-                            <div class="column-content" id="weaknessesContent">
-                                <!-- Populated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- LAYER 4: All Detected Insights (GRID-backed) -->
-                <div class="layer-section insights-list-section" id="layer4Section">
-                    <div class="section-header">
-                        <h2><i class="bi bi-lightbulb-fill"></i> All Detected Insights (GRID-backed)</h2>
-                        <div class="layer-badge">
-                            <span class="layer-number">LAYER 4</span>
-                            <span class="source-tag ai">Gemini Analysis</span>
-                        </div>
-                    </div>
-                    <div class="insights-content" id="allInsightsContent">
-                        <!-- Populated by JavaScript -->
-                    </div>
-                </div>
-
-                <!-- LAYER 5: Full Raw JSON Output -->
-                <div class="layer-section json-section" id="layer5Section">
-                    <div class="section-header">
-                        <h2><i class="bi bi-code-square"></i> Full Scouting Report JSON (GRID Data)</h2>
-                        <div class="layer-badge">
-                            <span class="layer-number">LAYER 5</span>
-                            <span class="source-tag">Raw Data</span>
-                            <button class="download-btn" onclick="downloadJSON()">
-                                <i class="bi bi-download"></i> Download
-                            </button>
-                        </div>
-                    </div>
-                    <div class="json-controls">
-                        <button class="toggle-json-btn" onclick="toggleJSON()">
-                            <i class="bi bi-chevron-down" id="jsonToggleIcon"></i>
-                            <span id="jsonToggleText">Expand Raw JSON</span>
+                <div class="chat-input-area">
+                    <div class="chat-input-wrapper">
+                        <input id="chatInput" class="chat-input"
+                               placeholder="Ask about the opponent..."
+                               onkeypress="handleChatKeypress(event)">
+                        <button class="chat-send-btn" onclick="sendChatMessage()">
+                            <i class="bi bi-send-fill"></i>
                         </button>
                     </div>
-                    <div class="json-content collapsed" id="rawJSONContent">
-                        <pre id="jsonPre"></pre>
+                </div>
+            </section>
+
+            <!-- Recommendations -->
+            <section class="layer-section recommendations-section">
+                <div class="section-header">
+                    <h2><i class="bi bi-bullseye"></i> Coach Recommendations</h2>
+                </div>
+                <div class="recommendations-grid" id="recommendationsContent"></div>
+            </section>
+
+            <!-- Summary -->
+            <section class="layer-section">
+                <div class="section-header">
+                    <h2><i class="bi bi-clipboard-data"></i> Scouting Summary</h2>
+                </div>
+
+                <div class="report-grid">
+                    <div class="report-column">
+                        <div class="column-header"><h3>Team Overview & Maps</h3></div>
+                        <div class="column-content" id="teamMapContent"></div>
+                    </div>
+
+                    <div class="report-column">
+                        <div class="column-header"><h3>Agents & Players</h3></div>
+                        <div class="column-content" id="agentPlayerContent"></div>
+                    </div>
+                </div>
+
+                <!-- Added strengths and weaknesses columns -->
+                <div class="report-grid">
+                    <div class="report-column">
+                        <div class="column-header"><h3>Key Strengths</h3></div>
+                        <div class="column-content" id="strengthsContent"></div>
+                    </div>
+                    <div class="report-column">
+                        <div class="column-header"><h3>Exploitable Weaknesses</h3></div>
+                        <div class="column-content" id="weaknessesContent"></div>
                     </div>
                 </div>
             </section>
-        </div>
-    </main>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-left">
-                    <span>Hackathon Project: Category 2 - Automated Scouting Report Generator</span>
+            <!-- Insights -->
+            <section class="layer-section">
+                <div class="section-header">
+                    <h2><i class="bi bi-lightbulb-fill"></i> Strategic Insights</h2>
                 </div>
-                <div class="footer-right">
-                    <span>Built with GRID API + Gemini AI + JetBrains</span>
-                </div>
-            </div>
-        </div>
-    </footer>
+                <div id="allInsightsContent"></div>
+            </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js"></script>
+            <!-- Dataset -->
+            <section class="layer-section json-section">
+                <div class="section-header">
+                    <h2><i class="bi bi-code-square"></i> Full Match Dataset</h2>
+                    <button class="download-btn" onclick="downloadJSON()">
+                        <i class="bi bi-download"></i> Download
+                    </button>
+                </div>
+
+                <div class="json-controls">
+                    <button class="toggle-json-btn" onclick="toggleJSON()">
+                        <i class="bi bi-chevron-down" id="jsonToggleIcon"></i>
+                        <span id="jsonToggleText">Expand Data</span>
+                    </button>
+                </div>
+
+                <div class="json-content collapsed" id="rawJSONContent">
+                    <pre id="jsonPre"></pre>
+                </div>
+            </section>
+
+        </section>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="/static/app.js"></script>
 </body>
 </html>
